@@ -1,12 +1,16 @@
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
+const swaggerUI = require('swagger-ui-express');
+const swaggerFile = require('./swagger-output.json');
 
 const app = express();
 
 // MIDDLEWARES GENERALES
 app.use(express.json()); // Para que el backend entienda formato JSON
 app.use(cors()); // Temporalmente abierto para desarrollo local. dsp la URL de Netlify
+
+app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 
 // Configuración del puerto
 app.set('port', process.env.PORT || 3000);
