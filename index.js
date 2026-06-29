@@ -1,10 +1,11 @@
 const express = require('express');
 const cors = require('cors');
+require('dotenv').config()
 const sequelize = require('./config/database');
 const swaggerUI = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
-const loginRouter=require('./src/routers/login.router')
-const usuarioRouter=require('./src/routers/usuario.router')
+const loginRouter=require('./src/routers/login.route')
+const usuarioRouter=require('./src/routers/usuario.route')
 const app = express();
 
 // MIDDLEWARES GENERALES

@@ -1,4 +1,4 @@
-const funcionLogin=require('../controllers/login.controllers')
+const funcionLogin=require('../controllers/login.controller')
 const express=require('express')
 const router=express.Router()
 

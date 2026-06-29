@@ -1,12 +1,13 @@
-const LoginModel=require('../modells/login.models')
+const LoginModel=require('../modells/login.model')
 const encriptador= require ('bcrypt')
+const jwt = require('jsonwebtoken')
 const funcionesLogin={}
 
 funcionesLogin.createUsuario= async(req,res) =>{
     try{
         const body=req.body
 
-        if(!body.username || !body.password){
+        if(!body.username || !body.password || !body.nombre || !body.apellido){
             res.status(404).json({
                 status:'0',
                 msg:'complete los campos correspondientes'
@@ -21,12 +22,12 @@ funcionesLogin.createUsuario= async(req,res) =>{
                 msg:'este username estan usado ingrese otro'
             })
             }
-        const saltRounds = 10
-        const contraseñaCifrada= await encriptador.hash(body.password,saltRounds)
+        const cifrado = 10
+        const contraseñaCifrada= await encriptador.hash(body.password,cifrado)
 
         const bodyDelNuevoUsuario={ //creo un nuevo body pq la contraseña ahora va a ir cifrada
             username:body.username,
-            password:body.pcontraseñaCifrada,
+            password:contraseñaCifrada,
             nombre:body.nombre,
             apellido:body.apellido,
             perfil:body.perfil
@@ -34,7 +35,8 @@ funcionesLogin.createUsuario= async(req,res) =>{
         await LoginModel.create(bodyDelNuevoUsuario)
     }
     catch(error)
-    {res.status(500).json({
+    {   console.error('Error al crear usuario:', error)
+        res.status(500).json({
         status:'0',
         msg:'no se pudo crear el usuario',error
     })}
@@ -70,10 +72,21 @@ funcionesLogin.loginUsuario= async(req,res) =>{
                 msg:'contraseña incorrecta pa'
             })
         }
+        const JWT_SECRET = process.env.JWT_SECRET || 'token_pal_usuario'
+        const token= jwt.sign(
+            {
+                id:userIdentico.id,
+                username:userIdentico.username,
+                perfil:userIdentico.perfil
+            },
+            'token_pal_usuario',
+            {expiresIn:'2h'} //el token expira en 2 horas
+        )
        
                 return res.json({
                     status:'1',
                     msg:'se pudo loguear correctamente',
+                    token: token,
                     username:userIdentico.username,
                     password:userIdentico.password,
                     userId:userIdentico._id
