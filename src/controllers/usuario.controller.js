@@ -1,5 +1,5 @@
-const UsuarioModel=require('../modells/usuario.models')
-const Login=require('../modells/login.models')
+const UsuarioModel=require('../modells/usuario.model')
+const Login=require('../modells/login.model')
  const funcionesUsuario={}
 
 funcionesUsuario.getAllUsers= async(req,res)=>{
@@ -16,7 +16,11 @@ funcionesUsuario.getAllUsers= async(req,res)=>{
         res.json(allUser)
     }
     catch(error){
-
+        res.status(500).json({
+                status: '0',
+                msg: 'Error al obtener usuarios',
+                error: error.message
+        })
     }
 }
 
@@ -26,7 +30,11 @@ funcionesUsuario.deleteUser=async(req,res)=>{ //este va a ser para que al lado d
             where:{username:req.params.id}
             })
         findUser.destroy()//elimino en base al objeto encontrado
-        }
+    return res.json({
+        status:'1',
+        msg:'usuario eliminado correctamente'
+    })    
+    }
     
     catch(error){
         res.status(505).json({
@@ -36,38 +44,13 @@ funcionesUsuario.deleteUser=async(req,res)=>{ //este va a ser para que al lado d
     }
 }
 
-//si ya estoy buscando al usuario y me van a salir sus boton no sirve de nada que busque solo para eliminar
-// funcionesUsuario.deleteSearch =async (req,res)=>{ //este va a ser para eliminar en base a una busqueda controlo que exista
-//     try{const username=req.params.username
-//         if(!username){
-//             return res.status(404).json({
-//                 status:'0',
-//                 msg:'no se ingresó username como parametro'
-//             })
-//         }
-//         const findUserByUsername= await Login.findOne(username)
-//         if(!findUserByUsername){
-//             return res.status(404).json({
-//                 status:'0',
-//                 msg:'no se encontró el usuario a eliminar'
-//             })
-//                 }
-//         }
-
-//     catch(error){
-//         res.status(505).json({
-//             status:'0',
-//             msg:'!ups hubo un error pa eliminar'
-//         })
-//     }
-// }
-
 funcionesUsuario.getOneUser=async (req,res) =>{ //va a haber un buscador para encontrar un usuario y poder editarlo o eliminarlo
     try{
         const findUser=await Login.findOne(
             {where:{
-                username:req.params.username}
-            })
+                username:req.params.username},
+            attributes:{exclude:['password']}
+            } )
         if(!findUser){
             return res.status(404).json({
                 status:'0',
