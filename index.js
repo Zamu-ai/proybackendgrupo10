@@ -3,7 +3,8 @@ const cors = require('cors');
 const sequelize = require('./config/database');
 const swaggerUI = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
-
+const loginRouter=require('./src/routers/login.router')
+const usuarioRouter=require('./src/routers/usuario.router')
 const app = express();
 
 // MIDDLEWARES GENERALES
@@ -15,6 +16,10 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 // Configuración del puerto
 app.set('port', process.env.PORT || 3000);
 
+
+// Rutas
+app.use('/api/login',loginRouter)
+app.use('/api/usuarios',usuarioRouter)
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
 sequelize.sync({ alter: true })
     .then(() => {
