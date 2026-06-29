@@ -30,7 +30,8 @@ funcionesUsuario.deleteUser=async(req,res)=>{ //este va a ser para que al lado d
             where:{username:req.params.id}
             })
         findUser.destroy()//elimino en base al objeto encontrado
-    return res.json({status:'1',
+    return res.json({
+        status:'1',
         msg:'usuario eliminado correctamente'
     })    
     }

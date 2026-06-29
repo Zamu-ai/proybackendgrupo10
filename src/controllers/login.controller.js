@@ -19,7 +19,7 @@ funcionesLogin.createUsuario= async(req,res) =>{
 
         if(sameUser)
             {return res.status(404).json({
-                msg:'este username estan usado ingrese otro'
+                msg:'este username ya esta usado ingrese otro'
             })
             }
         const cifrado = 10
