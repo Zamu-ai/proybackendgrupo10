@@ -1,25 +1,24 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const sequelize = require('./config/database');
 const swaggerUI = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
-const loginRouter=require('./src/routers/login.router')
-const usuarioRouter=require('./src/routers/usuario.router')
 const app = express();
 
 // MIDDLEWARES GENERALES
 app.use(express.json()); // Para que el backend entienda formato JSON
-app.use(cors()); // Temporalmente abierto para desarrollo local. dsp la URL de Netlify
+app.use(cors()); // por ahora abierto para desarrollo local. dsp la URL de Netlify
 
 app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 
-// Configuración del puerto
+//puerto
 app.set('port', process.env.PORT || 3000);
 
 
 // Rutas
-app.use('/api/login',loginRouter)
-app.use('/api/usuarios',usuarioRouter)
+app.use('/juego',require('./src/routes/juego.route'));
+
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
 sequelize.sync({ alter: true })
     .then(() => {
