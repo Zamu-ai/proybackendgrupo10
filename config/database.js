@@ -1,7 +1,7 @@
 const { Sequelize } = require('sequelize');
 
 // (Base de datos, Usuario, Pass)
-const sequelize = new Sequelize('tpfinalbackend', 'postgres', 'root', {
+const sequelize = new Sequelize('tpfinalbackend', 'postgres', 'Admin1234', {
     host: 'localhost',
     dialect: 'postgres',
     logging: false, // evita que la consola se llene de mensajes SQL molestos
