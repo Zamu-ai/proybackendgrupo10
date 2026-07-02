@@ -22,6 +22,46 @@ const Juego = sequelize.define('Juego', {
     plataformas: {
         type: DataTypes.JSON,
         allowNull: true
+    },
+    generos: {
+        type: DataTypes.JSON,
+        allowNull:true
+    },
+    trailer_id: {
+        type: DataTypes.STRING, // ID de YouTube
+        allowNull: true
+    },
+    fecha_lanzamiento: {
+        type: DataTypes.STRING, // Guardamos la fecha convertida a texto (ej: "2020-12-10")
+        allowNull: true
+    },
+    calificacion: {
+        type: DataTypes.INTEGER, // Nota de 0 a 100
+        allowNull: true
+    },
+    desarrolladora: {
+        type: DataTypes.STRING,
+        allowNull: true
+    },
+    capturas: {
+        type: DataTypes.JSON, // Array con URLs de las fotos 1080p
+        allowNull: true
+    },
+    juegos_similares: {
+        type: DataTypes.JSON, // Array de objetos (id, titulo, imagen_portada)
+        allowNull: true
+    },
+    dlcs: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    expansiones: {
+        type: DataTypes.JSON,
+        allowNull: true
+    },
+    saga: {
+        type: DataTypes.JSON,
+        allowNull: true
     }
 }, {
     tableName: 'juegos',
