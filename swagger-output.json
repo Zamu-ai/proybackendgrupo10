@@ -11,41 +11,12 @@
     "http"
   ],
   "paths": {
-    "/api/login/": {
-      "post": {
+    "/juego/": {
+      "get": {
         "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                },
-                "pcontraseñaCifrada": {
-                  "example": "any"
-                },
-                "nombre": {
-                  "example": "any"
-                },
-                "apellido": {
-                  "example": "any"
-                },
-                "perfil": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
         "responses": {
-          "404": {
-            "description": "Not Found"
+          "200": {
+            "description": "OK"
           },
           "500": {
             "description": "Internal Server Error"
@@ -53,52 +24,42 @@
         }
       }
     },
-    "/api/login/loginUser": {
-      "post": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "schema": {
-              "type": "object",
-              "properties": {
-                "username": {
-                  "example": "any"
-                },
-                "password": {
-                  "example": "any"
-                }
-              }
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          },
-          "404": {
-            "description": "Not Found"
-          },
-          "505": {
-            "description": "HTTP Version Not Supported"
-          }
-        }
-      }
-    },
-    "/api/usuarios/": {
+    "/juego/mas-jugados": {
       "get": {
         "description": "",
         "responses": {
           "200": {
             "description": "OK"
           },
-          "404": {
-            "description": "Not Found"
+          "500": {
+            "description": "Internal Server Error"
           }
         }
-      },
-      "put": {
+      }
+    },
+    "/juego/sugerencias/{nombre}": {
+      "get": {
+        "description": "",
+        "parameters": [
+          {
+            "name": "nombre",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "500": {
+            "description": "Internal Server Error"
+          }
+        }
+      }
+    },
+    "/juego/seleccionar": {
+      "post": {
         "description": "",
         "parameters": [
           {
@@ -115,52 +76,30 @@
           }
         ],
         "responses": {
-          "505": {
-            "description": "HTTP Version Not Supported"
+          "200": {
+            "description": "OK"
+          },
+          "201": {
+            "description": "Created"
+          },
+          "400": {
+            "description": "Bad Request"
+          },
+          "404": {
+            "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
     },
-    "/api/usuarios/{id}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "505": {
-            "description": "HTTP Version Not Supported"
-          }
-        }
-      }
-    },
-    "/api/usuarios/username/{username}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
+    "/juego/detalle/{id}": {
       "get": {
         "description": "",
         "parameters": [
           {
-            "name": "username",
+            "name": "id",
             "in": "path",
             "required": true,
             "type": "string"
@@ -173,8 +112,8 @@
           "404": {
             "description": "Not Found"
           },
-          "505": {
-            "description": "HTTP Version Not Supported"
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       }
