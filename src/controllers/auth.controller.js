@@ -32,20 +32,4 @@ funcionesAuthcontroller.googleAceptado = async(req,res)=>{
 funcionesAuthcontroller.falloGoogle = async (req,res)=>{
     res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`)//si el user canceló el login en la pantalla de google o credenciales fallan lo mandamos a la pantalla de login
 }
-
-funcionesAuthcontroller.estadoGoogleSesion=async(req,res)=>{
-    if(req.isAuthenticated()){
-        res.json({
-            status:'1',
-            msg:'Usuario autenticado con Google',
-            user:req.user
-        })
-    }else{
-        res.status(401).json({
-            status:'0',
-            msg:'No autenticado con Google'
-        })
-    }
-}
-
 module.exports=funcionesAuthcontroller
