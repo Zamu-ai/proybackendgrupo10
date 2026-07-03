@@ -1,4 +1,4 @@
-const LoginModel=require('../modells/login.model')
+const LoginModel=require('../models/login.model')
 const encriptador= require ('bcrypt')
 const jwt = require('jsonwebtoken')
 const funcionesLogin={}
