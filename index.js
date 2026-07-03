@@ -39,7 +39,7 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 app.set('port', process.env.PORT || 3000);
 
 // Rutas
-app.use('/juego',juegosRouter);
+app.use('/juego',require('./src/routes/juego.route'));
 app.use('/api/auth',authRouter)
 app.use('/api/usuarios',usuarioRouter)
 app.use('/api/login',loginRouter)
