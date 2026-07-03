@@ -9,7 +9,7 @@ passport.use(new GoogleStrategy({ //le paso un primer objeto con las credenciale
     //todo esto lo obtiene de Google Cloud Console
     clientID:process.env.GOOGLE_CLIENT_ID, //numero de indetnificacion de google (público)
     clientSecret:process.env.GOOGLE_CLIENT_SECRET, //la contraseña secreta de Google (PRIVADO)
-    callbackURL:process.env.GOOGLE_CALLBACK_URL || 'https://localhost:3000/api/auth/google/callback' //la url a la que Google debe devolver al usuario
+callbackURL: process.env.GOOGLE_CALLBACK_URL || 'http://localhost:3000/api/auth/google/callback'
 }, async (accesToken,refreshToken,profile,done) =>{ //le paso una segunda funcion (callback) q se ejecuta automaticamente cuando el user ponga su clave en Google correctamente y vuelva a mi web
     try{ //esto se ejecuta cuando Google responde
         //accesstoken->un "pase" para pedir info de google (Expira)
@@ -24,14 +24,14 @@ passport.use(new GoogleStrategy({ //le paso un primer objeto con las credenciale
                 username:profile.emails[0].value, //guardo su email en el username, EL PRIMERO Q GOOGL NOS DÉ
                 password:'oauth_user_' + Math.random().toString(36), //le creo una contraseña aleatoria pq no usa password local
 
-                nombre:profile.name.givenName,
-                apellido:profile.name.familyName,
+                nombre:profile.name.givenName || 'Usuario',
+                apellido:profile.name.familyName || 'Google',
                 googleId:profile.id, //guardamos el id de Google para futuros logins
                 perfil:'usuario', //rol por defecto
-                foto:profile.photos[0].value //URL de la foto de perfil de google
+                foto:profile.photos[0].value || null //URL de la foto de perfil de google
             })
         }
-        done(null.user) //llamamos a la funcion done de Passport
+        done(null,user) //llamamos a la funcion done de Passport
         //null= no hubo error user= el usuario q encontramos o creamos
     }
     catch(error){

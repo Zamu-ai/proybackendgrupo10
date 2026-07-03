@@ -15,8 +15,8 @@ funcionesAuthcontroller.googleAceptado = async(req,res)=>{
         process.env.JWT_SECRET || 'token_pal_usuario',
         {expiresIn:'2h'}
         )  
-
-        res.redirect(`${process.env.FRONTEND_URL}/oauth-callback?token=${token}`) //al no ser una peticion normal como veniamos manejando por AJAX/Fetch no se puede hacer res.json()
+        const frontendUrl=process.env.FRONTEND_URL || 'http://localhost:4200';
+        res.redirect(`${frontendUrl}/oauth-callback?token=${token}`) //al no ser una peticion normal como veniamos manejando por AJAX/Fetch no se puede hacer res.json()
                                                                                   //se tiene que redireccionar al user a la aplicacion del front pasandole el token en la barra de direcciones (URL Query)
                                                                                   //El front tiene q leer la URL y guardar el token en su localStorage
     }
@@ -30,6 +30,7 @@ funcionesAuthcontroller.googleAceptado = async(req,res)=>{
 }
 
 funcionesAuthcontroller.falloGoogle = async (req,res)=>{
-    res.redirect(`${process.env.FRONTEND_URL}/login?error=google_auth_failed`)//si el user canceló el login en la pantalla de google o credenciales fallan lo mandamos a la pantalla de login
+           const frontendUrl=process.env.FRONTEND_URL || 'http://localhost:4200';
+    res.redirect(`${frontendUrl}/login?error=google_auth_failed`)//si el user canceló el login en la pantalla de google o credenciales fallan lo mandamos a la pantalla de login
 }
 module.exports=funcionesAuthcontroller

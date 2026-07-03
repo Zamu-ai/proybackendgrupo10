@@ -15,7 +15,7 @@ const sanitizeInput = (req,res,next) =>{
     if(req.query){
         for(let key in req.query){
             if(typeof req.query[key]==='string'){
-                req.query[key]=sanitizador(trq.query[key].trim())
+                req.query[key]=sanitizador(req.query[key].trim())
             }
         }
     }
