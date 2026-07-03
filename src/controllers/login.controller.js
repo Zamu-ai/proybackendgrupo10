@@ -8,31 +8,46 @@ funcionesLogin.createUsuario= async(req,res) =>{
         const body=req.body
 
         if(!body.username || !body.password || !body.nombre || !body.apellido){
-            res.status(404).json({
+            return res.status(404).json({ // Agregamos return para cortar la ejecución aquí
                 status:'0',
                 msg:'complete los campos correspondientes'
             })
         }
         const sameUser=await LoginModel.findOne({
             where:{username: body.username}
-            })
+        })
 
-        if(sameUser)
-            {return res.status(404).json({
+        if(sameUser){
+            return res.status(404).json({
                 msg:'este username ya esta usado ingrese otro'
             })
-            }
+        }
         const cifrado = 10
         const contraseñaCifrada= await encriptador.hash(body.password,cifrado)
 
-        const bodyDelNuevoUsuario={ //creo un nuevo body pq la contraseña ahora va a ir cifrada
+        const bodyDelNuevoUsuario={ 
             username:body.username,
             password:contraseñaCifrada,
             nombre:body.nombre,
             apellido:body.apellido,
             perfil:body.perfil
         }
-        await LoginModel.create(bodyDelNuevoUsuario)
+
+        // Aquí se crea el usuario en la base de datos:
+        const usuarioCreado = await LoginModel.create(bodyDelNuevoUsuario)
+
+        // =======================================================
+        // 🔥 ¡LA LÍNEA QUE FALTA AGREGAR ES ESTA! 🔥
+        // =======================================================
+        return res.status(201).json({
+            status: '1',
+            msg: 'Usuario creado con éxito pa',
+            data: {
+                id: usuarioCreado.id,
+                username: usuarioCreado.username
+            }
+        });
+
     }
     catch(error)
     {   console.error('Error al crear usuario:', error)
