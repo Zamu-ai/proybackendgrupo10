@@ -21,7 +21,9 @@ app.set('port', process.env.PORT || 3000);
 
 // Rutas
 app.use('/juego',require('./src/routes/juego.route'));
-
+app.use('/api/login', loginRouter);
+// LÍNEA PARA LOS ver USUARIOS:
+app.use('/api/usuarios', usuarioRouter);
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
 sequelize.sync({ alter: true })
     .then(() => {
