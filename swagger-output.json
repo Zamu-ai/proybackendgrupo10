@@ -27,9 +27,6 @@
                 "password": {
                   "example": "any"
                 },
-                "pcontraseñaCifrada": {
-                  "example": "any"
-                },
                 "nombre": {
                   "example": "any"
                 },
@@ -44,6 +41,9 @@
           }
         ],
         "responses": {
+          "201": {
+            "description": "Created"
+          },
           "404": {
             "description": "Not Found"
           },
@@ -89,18 +89,36 @@
     "/api/usuarios/": {
       "get": {
         "description": "",
+        "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
           },
+          "401": {
+            "description": "Unauthorized"
+          },
           "404": {
             "description": "Not Found"
+          },
+          "500": {
+            "description": "Internal Server Error"
           }
         }
       },
       "put": {
         "description": "",
         "parameters": [
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
+          },
           {
             "name": "body",
             "in": "body",
@@ -115,6 +133,9 @@
           }
         ],
         "responses": {
+          "401": {
+            "description": "Unauthorized"
+          },
           "505": {
             "description": "HTTP Version Not Supported"
           }
@@ -130,9 +151,20 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
           "505": {
             "description": "HTTP Version Not Supported"
           }
@@ -140,22 +172,6 @@
       }
     },
     "/api/usuarios/username/{username}": {
-      "delete": {
-        "description": "",
-        "parameters": [
-          {
-            "name": "username",
-            "in": "path",
-            "required": true,
-            "type": "string"
-          }
-        ],
-        "responses": {
-          "default": {
-            "description": ""
-          }
-        }
-      },
       "get": {
         "description": "",
         "parameters": [
@@ -164,11 +180,19 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "authorization",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
           },
           "404": {
             "description": "Not Found"

@@ -14,37 +14,19 @@ juegoCtrl.getJuegos = async (req, res) => {
     }
 };
 
-// buscar un juego (Cache / Data On-Demand) (GET)
-juegoCtrl.buscarJuego = async (req, res) => {
+juegoCtrl.getTest= async(req, res)=>{
     try {
-        const { nombre } = req.params;
-
-        // busca primero en nuestra base local
-        let juego = await Juego.findOne({ where: { titulo: nombre } });
-
-        if (!juego) {
-            console.log('Buscando en IGDB para:', nombre);
-            const resultados = await igdbService.buscarJuegos(nombre);
-            
-            if (!resultados || resultados.length === 0) {
-                return res.status(404).json({ status: '0', msg: 'Juego no encontrado.' });
-            }
-
-            // primer resultado encontrado segun igdb
-            const mejorCoincidencia = resultados[0];
-
-            // 3. guardamos en nuestra basededatos usando upsert
-            await Juego.upsert(mejorCoincidencia);
-
-            juego = mejorCoincidencia;
+        const { id } = req.params;
+        const resultado = await igdbService.testGame(id);
+        if (!resultado) {
+            return res.status(404).json({ status: '0', msg: `Juego con id ${id} no encontrado en IGDB.` });
         }
-
-        res.json({ status: '1', data: juego });
+        res.json(resultado);
     } catch (error) {
-        console.log(error);
-        res.status(500).json({ status: '0', msg: 'Error procesando la búsqueda rápida.' });
+        console.error(`Error en getTest con id ${id}:`, error.message);
+        res.status(500).json({ status: '0', msg: 'Error en obtener detalles extensos', error: error.message });
     }
-};
+}
 
 // variables fuera del controlador para que persistan en memoria mientras el servidor corre
 let cachePopulares = null;
@@ -60,8 +42,8 @@ juegoCtrl.getMasJugados = async (req, res) => {
             return res.json({ status: '1', data: cachePopulares });
         }
 
-        // Si no hay cache o pasaron mas de 24 horas, consultamos a igdb
-        console.log('Actualizando cache de "Más Jugados" desde IGDB...');
+        // Si no hay cache o pasaron mas de 24 horas hacemos peticion
+        console.log('Actualizando cache de "Mas Jugados" desde IGDB...');
         const juegos = await igdbService.obtenerMasJugados();
         
         // guardamos
@@ -77,7 +59,7 @@ juegoCtrl.getMasJugados = async (req, res) => {
 juegoCtrl.getSugerencias = async (req, res) => {
     try {
         const { nombre } = req.params;
-        // llamamos a buscarJuegos pero pedimos mas resultados
+        // llamamos a buscarJuegos
         const resultados = await igdbService.buscarJuegos(nombre); 
         res.json({ status: '1', data: resultados });
     } catch (error) {
@@ -85,14 +67,53 @@ juegoCtrl.getSugerencias = async (req, res) => {
     }
 };
 
-juegoCtrl.guardarJuegoSeleccionado = async (req, res) => {
+// Obtener el detalle completo de un juego y cachearlo
+juegoCtrl.getDetalleJuego = async (req, res) => {
     try {
-        const { juego } = req.body; // El frontend te manda el objeto completo
-        await Juego.upsert(juego);
-        
-        res.json({ status: '1', msg: 'Juego guardado correctamente por ID' });
+        const { id } = req.params;
+        const juegoId = parseInt(id, 10); // convertimos el id en integer y base 10
+
+        // buscamos primero en nuestra BD
+        let juegoLocal = await Juego.findByPk(juegoId);
+
+        if (juegoLocal) {
+            console.log('⚡ Cache Hit: Juego cargado desde PostgreSQL');
+            return res.json({ status: '1', data: juegoLocal });
+        }
+
+        // no esta local, consultamos a IGDB
+        console.log('🌐 Cache Miss: Juego no encontrado en local, solicitando a IGDB...');
+        const detalleCompleto = await igdbService.obtenerDetallePorId(juegoId);
+
+        if (!detalleCompleto) {
+            return res.status(404).json({ status: '0', msg: 'Juego no encontrado en IGDB.' });
+        }
+
+        // guardamos el juego para ahorrar token si se busca el mismo juego
+        const juegoNuevo = await Juego.create({
+            id: detalleCompleto.id,
+            titulo: detalleCompleto.titulo,
+            descripcion: detalleCompleto.descripcion,
+            imagen_portada: detalleCompleto.imagen_portada,
+            plataformas: detalleCompleto.plataformas,
+            generos: detalleCompleto.generos,
+            trailer_id: detalleCompleto.trailer_id,
+            fecha_lanzamiento: detalleCompleto.fecha_lanzamiento,
+            calificacion: detalleCompleto.calificacion,
+            desarrolladora: detalleCompleto.desarrolladora,
+            capturas: detalleCompleto.capturas,
+            juegos_similares: detalleCompleto.juegos_similares,
+            dlcs: detalleCompleto.dlcs,
+            expansiones: detalleCompleto.expansiones,
+            saga: detalleCompleto.saga
+        });
+
+        //lo mandamos al Frontend
+        res.json({ status: '1', data: juegoNuevo });
+
     } catch (error) {
-        res.status(500).json({ status: '0', msg: 'Error al guardar' });
+        console.error('Error en getDetalleJuego:', error);
+        res.status(500).json({ status: '0', msg: 'Error procesando el detalle del juego.' });
     }
 };
 
