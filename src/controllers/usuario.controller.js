@@ -1,5 +1,5 @@
-const UsuarioModel=require('../modells/usuario.model')
-const Login=require('../modells/login.model')
+const UsuarioModel=require('../models/usuario.model')
+const Login=require('../models/login.model')
  const funcionesUsuario={}
 
 funcionesUsuario.getAllUsers= async(req,res)=>{
