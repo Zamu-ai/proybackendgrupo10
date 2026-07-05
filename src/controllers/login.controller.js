@@ -1,4 +1,5 @@
 const LoginModel=require('../models/login.model')
+const UsuarioModel=require('../models/usuario.model')
 const AccesoModal=require('../models/acceso.model')
 const encriptador= require ('bcrypt')
 const jwt = require('jsonwebtoken')
@@ -20,6 +21,7 @@ funcionesLogin.createUsuario= async(req,res) =>{
 
         if(sameUser){
             return res.status(404).json({
+                status:'0',
                 msg:'este username ya esta usado ingrese otro'
             })
         }
@@ -36,6 +38,12 @@ funcionesLogin.createUsuario= async(req,res) =>{
 
         // Aquí se crea el usuario en la base de datos:
         const usuarioCreado = await LoginModel.create(bodyDelNuevoUsuario)
+        
+        await UsuarioModel.create({
+                loginId: usuarioCreado.id
+            })
+         
+        console.log(` Usuario y Login creados para: ${body.username}`)
 
         return res.status(201).json({
             status: '1',
@@ -90,7 +98,7 @@ funcionesLogin.loginUsuario= async(req,res) =>{
                 username:userIdentico.username,
                 fecha:new Date(),
                 ip:req.ip,
-                userAgent:req.headers['user-agente'],
+                userAgent:req.headers['user-agent'],
                 exito:true
             })
         }

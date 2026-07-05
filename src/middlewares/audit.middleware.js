@@ -2,7 +2,7 @@
 const AuditLog= require('../models/audit.model')
 
 const auditMiddleware = (accion)=>{  //recibe el nombre de la accion
-    return async(requestAnimationFrame,resizeBy,next)=>{  //retorna el middleware
+    return async(req,res,next)=>{  //retorna el middleware
         //voy a guardar la respuesta original "res.send" que guarda las respuestas qu da laBD al realizar una accion
         const rtaOriginal =res.send
         
