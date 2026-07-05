@@ -1,4 +1,5 @@
 const LoginModel=require('../models/login.model')
+const AccesoModal=require('../models/acceso.model')
 const encriptador= require ('bcrypt')
 const jwt = require('jsonwebtoken')
 const funcionesLogin={}
@@ -36,9 +37,6 @@ funcionesLogin.createUsuario= async(req,res) =>{
         // Aquí se crea el usuario en la base de datos:
         const usuarioCreado = await LoginModel.create(bodyDelNuevoUsuario)
 
-        // =======================================================
-        // 🔥 ¡LA LÍNEA QUE FALTA AGREGAR ES ESTA! 🔥
-        // =======================================================
         return res.status(201).json({
             status: '1',
             msg: 'Usuario creado con éxito pa',
@@ -86,6 +84,15 @@ funcionesLogin.loginUsuario= async(req,res) =>{
                 status:'0',
                 msg:'contraseña incorrecta pa'
             })
+        }else{
+            await AccesoModal.create({
+                usuarioId:userIdentico.id,
+                username:userIdentico.username,
+                fecha:new Date(),
+                ip:req.ip,
+                userAgent:req.headers['user-agente'],
+                exito:true
+            })
         }
         const JWT_SECRET = process.env.JWT_SECRET || 'token_pal_usuario'
         const token= jwt.sign(
@@ -110,6 +117,16 @@ funcionesLogin.loginUsuario= async(req,res) =>{
 
     }
     catch(error){
+       await AccesoModal.create({
+                usuarioId:userIdentico.id,
+                username:userIdentico.username,
+                fecha:new Date(),
+                ip:req.ip,
+                userAgent:req.headers['user-agente'],
+                exito:false,
+                error:error.message
+
+            })
         res.status(505).json({
             status:'0',
             msg:'error en el logueo',error
