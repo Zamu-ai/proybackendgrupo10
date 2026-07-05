@@ -11,8 +11,8 @@ const usuarioRouter=require('./src/routes/usuario.route')
 const authRouter=require('./src/routes/auth.route')
 const juegosRouter= require('./src/routes/juego.route')
 const sanitizeInput=require('./src/middlewares/sanitize.middleware');
-
 const app = express();
+const pagoRoutes = require('./src/routes/pago.route.js');
 
 //Middlewares de sesión 
 app.use(session({
@@ -41,6 +41,7 @@ app.set('port', process.env.PORT || 3000);
 // Rutas
 app.use('/juego',require('./src/routes/juego.route'));
 app.use('/api/login', loginRouter);
+app.use('/api/pagos', pagoRoutes);
 // LÍNEA PARA LOS ver USUARIOS:
 app.use('/api/usuarios', usuarioRouter);
 app.use('/juego',juegosRouter);

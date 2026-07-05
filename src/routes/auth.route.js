@@ -4,9 +4,8 @@ const passport= require('../../config/passport')
 const authcontroller= require ('../controllers/auth.controller')
 
 router.get('/google',passport.authenticate('google',{scope:['profile','email']}))
-router.get('/google/callback',passport.authenticate('google',{failureRedirect:'/api/auth/google/failure',session:true}),authcontroller.googleAceptado)
+router.get('/google/callback',passport.authenticate('google',{failureRedirect:'/api/auth/google/failure',session:false}),authcontroller.googleAceptado)
 router.get('/google/failure',authcontroller.falloGoogle)
-router.get('/status',authcontroller.estadoGoogleSesion)
 router.get('/logout',(req,res)=>{
     req.logout((err) =>{
         if(err){

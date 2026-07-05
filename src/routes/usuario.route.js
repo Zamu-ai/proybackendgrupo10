@@ -1,7 +1,6 @@
 const express=require('express')
 const router=express.Router()
 const usuarioController=require('../controllers/usuario.controller')
-const loginController=require('../controllers/login.controller')
 const autenticar=require('../middlewares/auth.middleware')
 const soloAdmin= require('../middlewares/role.middlewares')
 
