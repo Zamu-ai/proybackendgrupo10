@@ -7,12 +7,20 @@ const Usuarios=ConexionABd.define('Usuario',{
         primaryKey: true,
         autoIncrement: true
     }
+    
+
 })
 
 Usuarios.belongsTo(Login,{
     foreignKey:{
     name:'loginId',
-    allownull:false},
+    allowNull: false},
     as: 'login'
 })
+
+Login.hasOne(Usuarios,{
+    foreignKey:'loginId',
+    as:'usuario'
+})
+
 module.exports=Usuarios
