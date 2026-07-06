@@ -3,7 +3,7 @@ const passport = require('passport');
 const express = require('express');
 const cors = require('cors');
 const session=require('express-session')
-  const sequelize = require('./config/database');
+const sequelize = require('./config/database');
 const swaggerUI = require('swagger-ui-express');
 const swaggerFile = require('./swagger-output.json');
 const loginRouter=require('./src/routes/login.route')
@@ -13,6 +13,10 @@ const juegosRouter= require('./src/routes/juego.route')
 const sanitizeInput=require('./src/middlewares/sanitize.middleware');
 const app = express();
 const pagoRoutes = require('./src/routes/pago.route.js');
+// RELACIONES DE LAS TABLAS (Uno a Muchos)
+// Importamos los modelos que queremos relacionar
+const Usuario = require('./src/models/usuario.model'); // Asegurate de que la ruta sea correcta
+const Compra = require('./src/models/compra.model');   // Tu modelo de compras
 
 //Middlewares de sesión 
 app.use(session({
@@ -49,7 +53,12 @@ app.use('/api/auth',authRouter)
 app.use('/api/usuarios',usuarioRouter)
 app.use('/api/login',loginRouter)
 
+
+// Establecemos la relación 1 a N
+Usuario.hasMany(Compra, { foreignKey: 'usuarioId', as: 'compras' });
+Compra.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' });
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
+
 sequelize.sync({ alter: true })
     .then(() => {
         console.log('Tablas de PostgreSQL sincronizadas');

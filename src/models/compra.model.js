@@ -1,5 +1,6 @@
 const { DataTypes } = require('sequelize');
-const sequelize = require('../../config/database'); // 👈 Ajustá la ruta a tu configuración de base de datos
+const sequelize = require('../../config/database'); // Ajustá la ruta a tu configuración de base de datos
+const Login = require('./login.model');
 
 const Compra = sequelize.define('Compra', {
   id: {
@@ -38,5 +39,6 @@ const Compra = sequelize.define('Compra', {
   tableName: 'compras',
   timestamps: true // Nos crea automáticamente las columnas createdAt y updatedAt
 });
+Compra.belongsTo(Login, { foreignKey: 'usuarioId', targetKey: 'id' });
 
 module.exports = Compra;

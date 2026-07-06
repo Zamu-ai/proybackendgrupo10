@@ -15,3 +15,4 @@ const AuditLog=conexionABd.define('AuditLog',{
     tableName:'audit_logs',
     timestamps:false
 })
+module.exports = AuditLog;

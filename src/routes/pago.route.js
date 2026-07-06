@@ -23,13 +23,13 @@ router.post('/crear-preferencia', async (req, res) => {
 
     const preference = new Preference(client);
 
-    // Mandamos el objeto exacto según la especificación del SDK v2
+    // Estructura oficial y limpia para el SDK v2 en Node.js
     const result = await preference.create({
       body: {
         items: [
           {
-            id: String(juegoId),
-            title: String(titulo),
+            id: juegoId,        // Pasalo directo (si es un número, que vaya como número)
+            title: titulo,      // El string limpio que viene del body
             quantity: 1,
             unit_price: Number(precio),
             currency_id: 'ARS'
@@ -39,8 +39,7 @@ router.post('/crear-preferencia', async (req, res) => {
           success: 'http://localhost:4200/pago-exitoso',
           failure: 'http://localhost:4200/home',
           pending: 'http://localhost:4200/home'
-        },
-        //auto_return: 'approved'
+        }
       }
     });
 
@@ -56,6 +55,46 @@ router.post('/crear-preferencia', async (req, res) => {
     return res.status(500).json({ 
       status: "0", 
       msg: "Error interno al procesar el pago con Mercado Pago." 
+    });
+  }
+});
+router.post('/confirmar-compra', autenticar, async (req, res) => {
+  try {
+    const { juegoId, tituloJuego, precioPagado, paymentIdMercadoPago, estado } = req.body;
+
+    // 🚀 Extraemos el ID real que descifró el middleware 'autenticar'
+    const usuarioId = req.usuario?.id || req.user?.id;
+    
+    // Si el token no tiene un ID válido, cortamos acá por seguridad
+    if (!usuarioId) {
+      return res.status(401).json({ 
+        status: "0", 
+        msg: "No se pudo identificar al usuario. Token inválido o ausente." 
+      });
+    }
+
+    console.log("-> 🐘 IMPACTANDO COMPRA REAL EN POSTGRES PARA EL USUARIO ID:", usuarioId);
+
+    const nuevaCompra = await Compra.create({
+      usuarioId: usuarioId, // El usuario logueado en Angular
+      juegoId: String(juegoId),
+      tituloJuego: String(tituloJuego),
+      precioPagado: Number(precioPagado),
+      paymentIdMercadoPago: String(paymentIdMercadoPago),
+      estado: String(estado)
+    });
+
+    return res.status(201).json({
+      status: "1",
+      msg: "¡Compra registrada con éxito en PostgreSQL!",
+      data: nuevaCompra
+    });
+
+  } catch (error) {
+    console.error("Error al registrar la compra en la base de datos:", error);
+    return res.status(500).json({ 
+      status: "0", 
+      msg: "Error interno al intentar guardar la compra." 
     });
   }
 });
