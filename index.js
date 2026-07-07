@@ -9,9 +9,8 @@ const swaggerFile = require('./swagger-output.json');
 const loginRouter=require('./src/routes/login.route')
 const usuarioRouter=require('./src/routes/usuario.route')
 const authRouter=require('./src/routes/auth.route')
-const juegosRouter= require('./src/routes/juego.route')
-const sanitizeInput=require('./src/middlewares/sanitize.middleware');
-
+const dashboardRouter=require('./src/routes/dashboard.route')
+ const sanitizeInput=require('./src/middlewares/sanitize.middleware');
 const app = express();
 
 //Middlewares de sesión 
@@ -39,10 +38,11 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 app.set('port', process.env.PORT || 3000);
 
 // Rutas
-app.use('/juego',require('./src/routes/juego.route'));
+app.use('/juego',require('./src/routes/juego.route'))
 app.use('/api/auth',authRouter)
 app.use('/api/usuarios',usuarioRouter)
 app.use('/api/login',loginRouter)
+app.use('/api/dashboard',dashboardRouter)
 
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
 sequelize.sync({ alter: true })
