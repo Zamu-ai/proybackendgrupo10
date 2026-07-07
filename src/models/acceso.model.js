@@ -7,7 +7,7 @@ const Acceso=conexionABd.define('Acceso',{
     fecha:{type:DataTypes.DATE,allowNull:false,defaultValue:DataTypes.NOW},
     ip:{type:DataTypes.STRING,allowNull:true},
     userAgente:{type:DataTypes.STRING,allowNull:true},
-    exito:{type:DataTypes.BOOLEAN,allowNull:false},
+    exito:{type:DataTypes.BOOLEAN,allowNull:false,defaultValue:false},
     error:{type:DataTypes.STRING,allowNull:true}
 },{
     tableName:'accesos',

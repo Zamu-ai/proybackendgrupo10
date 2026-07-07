@@ -16,6 +16,7 @@ const Resena = require('./src/models/resena.model');
 const Usuarios = require('./src/models/usuario.model');
 const Login = require('./src/models/login.model');
 const dashboardRouter = require('./src/routes/dashboard.route');
+const dashboardJuegoRouter=require('./src/routes/dashboardJuego.route')
 
 const app = express();
 
@@ -59,7 +60,8 @@ app.use('/resenas', require('./src/routes/resena.route'));
 app.use('/api/auth',authRouter);
 app.use('/api/usuarios',usuarioRouter);
 app.use('/api/login',loginRouter);
-app.use('/api/dashboardJuego', dashboardRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/dashboardJuego',dashboardJuegoRouter)
 
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
 sequelize.sync({ alter: true })
