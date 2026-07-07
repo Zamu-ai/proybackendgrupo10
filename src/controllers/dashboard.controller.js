@@ -1,4 +1,4 @@
-const {sequelize, Op}=require('sequelize')
+const {Sequelize, Op}=require('sequelize')
 const LoginModel= require('../models/login.model')
 const AccesoModel= require('../models/acceso.model')
 const AuditoriaModel= require('../models/audit.model')
@@ -11,8 +11,8 @@ funcionesDelDashboard.getMetricasGenerales=async(req,res)=>{
 
         const hace7Dias=new Date() //creo el objeto con la fecha y hora actual
         hace7Dias.setDate(hace7Dias.getDate() -7)//lo modifico para que sea la fecha de hace una semana
-        const usuariosNuevos= await Login.count({ //creo variable que guarda la cuenta de todos los usuarios creaods hace 7 o mas dias
-            where:{creadedAt:{[Op.gte]: hace7Dias}}
+        const usuariosNuevos= await LoginModel.count({ //creo variable que guarda la cuenta de todos los usuarios creaods hace 7 o mas dias
+            where:{createdAt:{[Op.gte]: hace7Dias}}
         })
 
         const hoy=new Date()
@@ -22,7 +22,7 @@ funcionesDelDashboard.getMetricasGenerales=async(req,res)=>{
             exito:true
         })
 
-        const totalAcciones= await AuditoriaModel.count
+        const totalAcciones= await AuditoriaModel.count()
         res.json({
             status:'1',
             data:{
@@ -33,7 +33,7 @@ funcionesDelDashboard.getMetricasGenerales=async(req,res)=>{
             }
         })
     }
-    catch(Error){
+    catch(error){
         res.status(500).json({
             status:'0',
             msg:'fallo al realizar las metricas'

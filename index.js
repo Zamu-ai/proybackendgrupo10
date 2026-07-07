@@ -15,7 +15,7 @@ const Juego = require('./src/models/juego.model');
 const Resena = require('./src/models/resena.model');
 const Usuarios = require('./src/models/usuario.model');
 const Login = require('./src/models/login.model');
-const dashboardRouter = require('./src/routes/dashboardJuego.route');
+const dashboardRouter = require('./src/routes/dashboard.route');
 
 const app = express();
 
