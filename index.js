@@ -11,6 +11,13 @@ const usuarioRouter=require('./src/routes/usuario.route')
 const authRouter=require('./src/routes/auth.route')
 const juegosRouter= require('./src/routes/juego.route')
 const sanitizeInput=require('./src/middlewares/sanitize.middleware');
+const Juego = require('./src/models/juego.model');
+const Resena = require('./src/models/resena.model');
+const Usuarios = require('./src/models/usuario.model');
+const Login = require('./src/models/login.model');
+const dashboardRouter = require('./src/routes/dashboard.route');
+const dashboardJuegoRouter=require('./src/routes/dashboardJuego.route')
+
 const app = express();
 const pagoRoutes = require('./src/routes/pago.route.js');
 // RELACIONES DE LAS TABLAS (Uno a Muchos)
@@ -42,16 +49,24 @@ app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(swaggerFile));
 //puerto
 app.set('port', process.env.PORT || 3000);
 
+//relaciones
+//un Juego TIENE MUCHAS Reseñas
+Juego.hasMany(Resena, { foreignKey: 'juegoId', as: 'resenas' });
+//una Reseña PERTENECE A un Juego
+Resena.belongsTo(Juego, { foreignKey: 'juegoId', as: 'juego' });
+// un Login (usuario) tiene muchas reseñas
+Login.hasMany(Resena, { foreignKey: 'loginId', as: 'resenas' });
+// una reseña pertenece a un Login (usuario)
+Resena.belongsTo(Login, { foreignKey: 'loginId', as: 'usuario' });
+
 // Rutas
 app.use('/juego',require('./src/routes/juego.route'));
-app.use('/api/login', loginRouter);
-app.use('/api/pagos', pagoRoutes);
-// LÍNEA PARA LOS ver USUARIOS:
-app.use('/api/usuarios', usuarioRouter);
-app.use('/juego',juegosRouter);
-app.use('/api/auth',authRouter)
-app.use('/api/usuarios',usuarioRouter)
-app.use('/api/login',loginRouter)
+app.use('/resenas', require('./src/routes/resena.route'));
+app.use('/api/auth',authRouter);
+app.use('/api/usuarios',usuarioRouter);
+app.use('/api/login',loginRouter);
+app.use('/api/dashboard', dashboardRouter);
+app.use('/api/dashboardJuego',dashboardJuegoRouter)
 
 
 // Establecemos la relación 1 a N

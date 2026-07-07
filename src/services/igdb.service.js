@@ -1,5 +1,6 @@
 require('dotenv').config();
 const axios = require('axios');
+const { translate } = require('google-translate-api-x');
 
 const igdbService = {}; //contenedor
 
@@ -63,7 +64,7 @@ igdbService.buscarJuegos = async (nombreJuego) => {
         const token = await obtenerToken();
         const query = `
             search "${nombreJuego}";
-            fields name, cover.url, platforms.name, genres.name;
+            fields name, cover.url, platforms.name, genres.name, first_release_date ;
             where game_type = (0, 8, 9) & version_parent = null;
             limit 15;
         `;
@@ -78,13 +79,21 @@ igdbService.buscarJuegos = async (nombreJuego) => {
         });
 
         // mapeamos la respuesta limpia para el front
-        return response.data.map(juego => ({
-            id: juego.id,
-            titulo: juego.name,
-            plataformas: (juego.platforms || []).map(p => p.name),
-            generos: (juego.genres || []).map(g => g.name),
-            imagen_portada: juego.cover ? `https:${juego.cover.url.replace('t_thumb', 't_cover_big')}` : null
-        }));
+        return response.data.map(juego => {
+            // La logica para la fecha, igdb tiene fecha en formato Unix Timestamp, la convertimos a año-mes-dia
+            const fechaLanzamiento = juego.first_release_date
+                ? new Date(juego.first_release_date * 1000).toISOString().split('T')[0]
+                : 'Fecha desconocida';
+
+            return {
+                id: juego.id,
+                titulo: juego.name,
+                plataformas: (juego.platforms || []).map(p => p.name),
+                generos: (juego.genres || []).map(g => g.name),
+                imagen_portada: juego.cover ? `https:${juego.cover.url.replace('t_thumb', 't_cover_big')}` : null,
+                fecha_lanzamiento: fechaLanzamiento,
+            };
+        });
 
     } catch (error) {
         console.error('Error en buscarJuegos:', error.response?.data || error.message);
@@ -98,12 +107,11 @@ igdbService.obtenerMasJugados = async () => {
         // juegos con muchas valoraciones y alta popularidad
         // lenguaje propio de igdb
         const query = `
-            fields name, cover.url, total_rating_count; 
+            fields name, cover.url, total_rating_count, genres.name, platforms.name;
             where total_rating_count > 1000; 
             sort total_rating_count desc; 
             limit 10;
         `;
-
         const response = await axios.post('https://api.igdb.com/v4/games', query, {
             headers: {
                 'Client-ID': process.env.IGDB_CLIENT_ID,
@@ -116,7 +124,9 @@ igdbService.obtenerMasJugados = async () => {
         return response.data.map(juego => ({
             id: juego.id,
             titulo: juego.name,
-            imagen_portada: juego.cover ? `https:${juego.cover.url.replace('t_thumb', 't_cover_big')}` : null
+            imagen_portada: juego.cover ? `https:${juego.cover.url.replace('t_thumb', 't_cover_big')}` : null,
+            plataformas: (juego.platforms || []).map(p => p.name),
+            generos: (juego.genres || []).map(g => g.name)
         }));
     } catch (error) {
         console.error('Error en servicio de populares:', error.message);
@@ -183,10 +193,23 @@ igdbService.obtenerDetallePorId = async (juegoId) => {
 						.map(s => `https:${s.url.replace('t_thumb', 't_1080p')}`
         );
 
+        let descripcionEspañol = 'Sin descripción disponible';
+        
+        if (juego.summary) {
+            try {
+                // Le pasamos el texto en ingles y le forzamos el destino a 'es' (Español)
+                const traduccion = await translate(juego.summary, { to: 'es' });
+                descripcionEspañol = traduccion.text;
+            } catch (translationError) {
+                console.error('Error al traducir, manteniendo texto original:', translationError.message);
+                descripcionEspañol = juego.summary; // si falla devuelve en ingles
+            }
+        }
+
         return {
             id: juego.id,
             titulo: juego.name,
-            descripcion: juego.summary || 'Sin descripción disponible',
+            descripcion: descripcionEspañol,
             imagen_portada: juego.cover ? `https:${juego.cover.url.replace('t_thumb', 't_cover_big')}` : null,
             plataformas: (juego.platforms || []).map(p => p.name),
             generos: (juego.genres || []).map(g => g.name),
