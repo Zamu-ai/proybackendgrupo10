@@ -46,6 +46,11 @@
             "in": "path",
             "required": true,
             "type": "string"
+          },
+          {
+            "name": "user-agent",
+            "in": "header",
+            "type": "string"
           }
         ],
         "responses": {

@@ -5,20 +5,18 @@ const encriptador= require ('bcrypt')
 const jwt = require('jsonwebtoken')
 const funcionesLogin={}
 
-funcionesLogin.createUsuario = async (req, res) => {
-    try {
-        const body = req.body
+funcionesLogin.createUsuario= async(req,res) =>{
+    try{
+        const body=req.body
 
-        // 🚀 Sumamos body.email a los campos obligatorios del backend
-        if (!body.username || !body.password || !body.nombre || !body.apellido || !body.email) {
-            return res.status(400).json({ 
-                status: '0',
-                msg: 'Complete los campos correspondientes (incluyendo el correo electrónico)'
+        if(!body.username || !body.password || !body.nombre || !body.apellido){
+            return res.status(404).json({ // Agregamos return para cortar la ejecución aquí
+                status:'0',
+                msg:'complete los campos correspondientes'
             })
         }
-
-        const sameUser = await LoginModel.findOne({
-            where: { username: body.username }
+        const sameUser=await LoginModel.findOne({
+            where:{username: body.username}
         })
 
         if(sameUser){
@@ -27,32 +25,15 @@ funcionesLogin.createUsuario = async (req, res) => {
                 msg:'este username ya esta usado ingrese otro'
             })
         }
-
-        // 🕵️‍♂️ OPCIONAL: También podés verificar si el email ya está registrado
-        const sameEmail = await LoginModel.findOne({
-            where: { email: body.email }
-        })
-
-        if (sameEmail) {
-            return res.status(400).json({
-                status: '0',
-                msg: 'Este correo electrónico ya está registrado por otro usuario'
-            })
-        }
-
         const cifrado = 10
-        const contraseñaCifrada = await encriptador.hash(body.password, cifrado)
+        const contraseñaCifrada= await encriptador.hash(body.password,cifrado)
 
-        // 🚀 Agregamos email y foto al objeto final que va hacia Sequelize
-        const bodyDelNuevoUsuario = { 
-            username: body.username,
-            password: contraseñaCifrada,
-            nombre: body.nombre,
-            apellido: body.apellido,
-            email: body.email, // 📧 Guardado dinámico
-            // 👤 Si el usuario no manda foto en el front, le clavamos una silueta por defecto:
-            foto: body.foto || 'https://images.abstractapi.com/default-avatar.png', 
-            perfil: body.perfil || 'USER'
+        const bodyDelNuevoUsuario={ 
+            username:body.username,
+            password:contraseñaCifrada,
+            nombre:body.nombre,
+            apellido:body.apellido,
+            perfil:body.perfil
         }
 
         // Aquí se crea el usuario en la base de datos:
@@ -69,20 +50,17 @@ funcionesLogin.createUsuario = async (req, res) => {
             msg: 'Usuario creado con éxito pa',
             data: {
                 id: usuarioCreado.id,
-                username: usuarioCreado.username,
-                email: usuarioCreado.email
+                username: usuarioCreado.username
             }
         });
 
     }
-    catch (error) {   
-        console.error('Error al crear usuario:', error)
+    catch(error)
+    {   console.error('Error al crear usuario:', error)
         res.status(500).json({
-            status: '0',
-            msg: 'No se pudo crear el usuario',
-            error: error.message
-        })
-    }
+        status:'0',
+        msg:'no se pudo crear el usuario',error
+    })}
 }
 
 funcionesLogin.loginUsuario= async(req,res) =>{

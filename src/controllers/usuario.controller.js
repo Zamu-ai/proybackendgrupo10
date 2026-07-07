@@ -69,24 +69,16 @@ funcionesUsuario.getOneUser=async (req,res) =>{ //va a haber un buscador para en
 
 
 
-funcionesUsuario.modifUser = async (req, res) => {
-    try { 
-        const { id } = req.body
-        const updateUser = await Login.update(req.body, {
-            where: { id: id }
-        })
-        
-        // 🚀 RESPUESTA FALTANTE: Avisamos que todo salió de diez
-        return res.json({
-            status: '1',
-            msg: 'Usuario modificado con éxito'
+funcionesUsuario.modifUser= async(req,res)=>{ //este va a ser un boton para modificar al usuario por eso no verifico si existe
+    try{ const {id} = req.body
+        const updateUser= await Login.update(req.body,{
+            where:{id:id}
         })
     }
-    catch (error) {
-        res.status(500).json({
-            status: '0',
-            msg: 'Algo salió mal al modificar',
-            error: error.message
+    catch(error){
+        res.status(505).json({
+            status:'0',
+            msg:'algo salió mal',error
         })
     }
 }
