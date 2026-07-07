@@ -19,6 +19,11 @@ const dashboardRouter = require('./src/routes/dashboard.route');
 const dashboardJuegoRouter=require('./src/routes/dashboardJuego.route')
 
 const app = express();
+const pagoRoutes = require('./src/routes/pago.route.js');
+// RELACIONES DE LAS TABLAS (Uno a Muchos)
+// Importamos los modelos que queremos relacionar
+const Usuario = require('./src/models/usuario.model'); // Asegurate de que la ruta sea correcta
+const Compra = require('./src/models/compra.model');   // Tu modelo de compras
 
 //Middlewares de sesión 
 app.use(session({
@@ -63,7 +68,12 @@ app.use('/api/login',loginRouter);
 app.use('/api/dashboard', dashboardRouter);
 app.use('/api/dashboardJuego',dashboardJuegoRouter)
 
+
+// Establecemos la relación 1 a N
+Usuario.hasMany(Compra, { foreignKey: 'usuarioId', as: 'compras' });
+Compra.belongsTo(Usuario, { foreignKey: 'usuarioId', as: 'usuario' });
 // SINCRONIZAR BASE DE DATOS Y ARRANCAR
+
 sequelize.sync({ alter: true })
     .then(() => {
         console.log('Tablas de PostgreSQL sincronizadas');
