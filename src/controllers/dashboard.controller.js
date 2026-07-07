@@ -137,7 +137,7 @@ funcionesDelDashboard.getAuditoriaListado=async(req,res)=>{
         const {page = 1, limit = 10, search=''} = req.query
         const offset=(page -1 )*limit
 
-        const where ={
+        const where ={}
             if(search){
                 where[Op.or]=[
                     {usuario:{[Op.iLike]:`%${search}%`}},
@@ -145,7 +145,7 @@ funcionesDelDashboard.getAuditoriaListado=async(req,res)=>{
                     {ruta:{[Op.iLike]:`%${search}%`}}
                 ]
             }
-        }
+        
     
         const {count, rows}= await AuditoriaModel.findAndCountAll({
             where,
