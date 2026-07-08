@@ -251,18 +251,3 @@ npm run swagger
 
 ---
 
-## 12) Observaciones de funcionamiento actuales
-
-- El proyecto usa `sequelize.sync({ alter: true })`, útil para desarrollo pero sensible para producción.
-- Varias rutas de reseñas están sin autenticación activa (comentado en el código para pruebas).
-- La cache de “más jugados” está en memoria de proceso (se reinicia al reiniciar servidor).
-
----
-
-## 13) Recomendaciones para producción (siguiente paso)
-
-- Migrar de `sync({ alter: true })` a migraciones controladas.
-- Activar autenticación obligatoria para crear reseñas.
-- Externalizar cache (Redis) para escalabilidad.
-- Evitar defaults inseguros en secretos (`JWT_SECRET`, `SESSION_SECRET`).
-- Añadir tests automáticos (unitarios e integración).
